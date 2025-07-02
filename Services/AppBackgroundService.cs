@@ -5,12 +5,21 @@ using xhunter74.CollectionManager.API.Settings;
 
 namespace xhunter74.FilesUploader.Services;
 
+/// <summary>
+/// Background service that periodically scans a folder and uploads files using <see cref="FilesService"/>.
+/// </summary>
 public class AppBackgroundService : BaseBackgroundService
 {
     private readonly SemaphoreSlim _taskSemaphore = new(1, 1);
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly AppSettings _appSettings;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppBackgroundService"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance for logging service events.</param>
+    /// <param name="scopeFactory">The service scope factory for dependency injection.</param>
+    /// <param name="options">The application settings options.</param>
     public AppBackgroundService(
         ILogger<AppBackgroundService> logger,
         IServiceScopeFactory scopeFactory,
@@ -21,6 +30,11 @@ public class AppBackgroundService : BaseBackgroundService
         _appSettings = options.Value;
     }
 
+    /// <summary>
+    /// Periodically scans the configured folder and uploads files using <see cref="FilesService"/>.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token that is triggered when the service is stopping.</param>
+    /// <returns>A task that represents the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         Logger.LogInformation($"{nameof(AppBackgroundService)} is starting.");
