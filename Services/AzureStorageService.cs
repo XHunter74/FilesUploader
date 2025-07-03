@@ -42,12 +42,16 @@ public class AzureStorageService
         {
             _logger.LogInformation("Starting upload for file {BlobName} in folder {ContainerName}", blobName, containerName);
 
+            _logger.LogDebug("Getting BlobContainerClient for container: {ContainerName}", containerName);
             var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
 
+            _logger.LogDebug("Ensuring container exists: {ContainerName}", containerName);
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
+            _logger.LogDebug("Getting BlobClient for blob: {BlobName}", blobName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
+            _logger.LogDebug("Uploading blob: {BlobName} (size: {Size} bytes)", blobName, sources?.Length ?? 0);
             using var memoryStream = new MemoryStream(sources);
             await blobClient.UploadAsync(memoryStream, overwrite: true, cancellationToken: cancellationToken);
 
