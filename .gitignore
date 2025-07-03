@@ -2,3 +2,5 @@ appsettings.Development.json
 .vs/
 bin/
 obj/
+appsettings.Production.json
+Docker-Logs/

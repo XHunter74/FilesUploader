@@ -44,12 +44,14 @@ public class FilesService
             _logger.LogWarning("Scan folder did not exist. Created: {ScanFolder}", _appSettings.ScanFolder);
         }
 
-        var files = GetFiles(_appSettings.ScanFolder);
+        var fullPath = Path.GetFullPath(_appSettings.ScanFolder);
+
+        var files = GetFiles(fullPath);
         _logger.LogInformation("Found {FileCount} files to upload.", files.Length);
 
         foreach (var file in files)
         {
-            var filePath = Path.Combine(_appSettings.ScanFolder, file);
+            var filePath = Path.Combine(fullPath, file);
             try
             {
                 _logger.LogInformation("Uploading file: {FileName}", file);
@@ -95,8 +97,8 @@ public class FilesService
             files = files
                 .Select(x =>
                 {
-                    var parts = x.Split(Path.DirectorySeparatorChar);
-                    return parts.Length > 1 ? string.Join(Path.DirectorySeparatorChar.ToString(), parts.Skip(1)) : x;
+                    var filePath = x.Replace($"{path}{Path.DirectorySeparatorChar}", "");
+                    return filePath;
                 })
                 .ToArray();
 
