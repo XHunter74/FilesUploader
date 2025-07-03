@@ -182,7 +182,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. **Files not uploading**: Check Azure connection string and container permissions
 2. **Permission errors**: Ensure the application has read/write access to the scan folder
 3. **Files stuck in folder**: Check logs for upload errors or Azure connectivity issues
-4. **High memory usage**: Large files are loaded into memory; consider chunked uploads for very large files
+4. **Slow uploads for large files**: Large files are streamed efficiently but may take time depending on network bandwidth
 
 ### Debug Steps
 
