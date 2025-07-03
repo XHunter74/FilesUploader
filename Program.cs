@@ -50,7 +50,7 @@ public class Program
         Log.Logger = logConfig.CreateLogger();
         try
         {
-            Log.Information("====================================================================");
+            Log.Information("=========================== APP STARTED ==========================");
             Log.Information($"FilesUploader Starts. Version: {Assembly.GetEntryAssembly()?.GetName().Version}");
             await CreateHostBuilder(args)
             .Build()

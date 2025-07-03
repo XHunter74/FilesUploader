@@ -37,6 +37,7 @@ public class AppBackgroundService : BaseBackgroundService
     /// <returns>A task that represents the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        Logger.LogInformation("=========================== SCAN STARTED ===========================");
         Logger.LogInformation($"{nameof(AppBackgroundService)} is starting.");
 
         cancellationToken.Register(() =>
@@ -60,6 +61,7 @@ public class AppBackgroundService : BaseBackgroundService
                 _taskSemaphore.Release();
             }
 
+            Logger.LogInformation("=========================== SCAN FINISHED ==========================");
             await Task.Delay(TimeSpan.FromMinutes(_appSettings.ScanIntervalMinutes), cancellationToken);
         }
 
