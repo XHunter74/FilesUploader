@@ -18,6 +18,7 @@ public static class LoggerConfigurationUtils
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("appsettings.json")
                         .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+                        .AddEnvironmentVariables()
                         .Build();
 
         var logConfig = new LoggerConfiguration()
