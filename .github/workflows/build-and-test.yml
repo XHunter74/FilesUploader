@@ -1,0 +1,34 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore FilesUploader.sln
+
+
+      - name: Build all projects
+        run: dotnet build FilesUploader.sln --configuration Release --no-restore
+
+      - name: Find and run all test projects
+        run: |
+          for proj in $(find . -type f -name "*.csproj" | grep -i test); do
+            echo "Running tests in $proj"
+            dotnet test "$proj" --configuration Release --verbosity normal --logger "trx;LogFileName=test_results.trx"
+          done
+        shell: bash
