@@ -1,0 +1,15 @@
+services:
+  files-uploader:
+    image: files-uploader
+    environment:
+      ASPNETCORE_ENVIRONMENT: 'Production'
+    build:
+      args:
+        PROJECT_NAME: FilesUploader
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "C:/Sources/My Projects/FilesUploader/Docker-Logs:/app/Logs"
+      - "C:/Sources/My Projects/FilesUploader/Backups:/app/Backups"
+ 
+  
