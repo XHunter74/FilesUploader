@@ -37,7 +37,6 @@ public class AppBackgroundService : BaseBackgroundService
     /// <returns>A task that represents the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        Logger.LogInformation("=========================== SCAN STARTED ===========================");
         Logger.LogInformation($"{nameof(AppBackgroundService)} is starting.");
 
         cancellationToken.Register(() =>
@@ -46,6 +45,8 @@ public class AppBackgroundService : BaseBackgroundService
         while (!cancellationToken.IsCancellationRequested)
         {
             await _taskSemaphore.WaitAsync(cancellationToken);
+            Logger.LogInformation("=========================== SCAN STARTED ===========================");
+
             try
             {
                 using var scope = _scopeFactory.CreateScope();
