@@ -58,7 +58,7 @@ public class FilesService
                 await _azureStorageService.UploadFileAsync(
                     _appSettings.Container,
                     file,
-                    File.ReadAllBytes(filePath),
+                    filePath,
                     cancellationToken);
                 _logger.LogInformation("Successfully uploaded file: {FileName}", file);
             }
