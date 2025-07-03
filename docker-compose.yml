@@ -1,15 +1,20 @@
 services:
   files-uploader:
-    image: files-uploader
+    image: ghcr.io/xhunter74/files-uploader:latest
+    hostname: files-uploader
+    restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: 'Production'
+      AppSettings__AzureConnectionString: 'Your Azure Storage Connection String'
+      AppSettings__ScanIntervalMinutes: 1
+      Serilog__MinimumLevel__Default: 'Debug'
     build:
       args:
         PROJECT_NAME: FilesUploader
       context: .
       dockerfile: Dockerfile
     volumes:
-      - "C:/Sources/My Projects/FilesUploader/Docker-Logs:/app/Logs"
-      - "C:/Sources/My Projects/FilesUploader/Backups:/app/Backups"
+      - "./logs:/app/Logs"
+      - "./backups:/app/Backups"
  
   
