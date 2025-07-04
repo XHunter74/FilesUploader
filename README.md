@@ -55,6 +55,24 @@ Configure the application by editing `appsettings.json`:
 
 ## 🚀 Getting Started
 
+### Option 1: Using Pre-built Docker Image
+
+For quick deployment, use the pre-built Docker image:
+
+```powershell
+docker run -d \
+  -v /path/to/your/scan/folder:/app/Backups \
+  -v /path/to/your/logs:/app/Logs \
+  -e AppSettings__AzureConnectionString="your-connection-string" \
+  -e AppSettings__Container="your-container-name" \
+  -e AppSettings__ScanIntervalMinutes=1 \
+  -e AppSettings__MaxFilesToStore: 30 \
+  --name files-uploader \
+  ghcr.io/xhunter74/files-uploader:latest
+```
+
+### Option 2: Build from Source
+
 ### 1. Clone and Build
 
 ```powershell
