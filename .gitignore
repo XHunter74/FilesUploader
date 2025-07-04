@@ -4,3 +4,4 @@ bin/
 obj/
 appsettings.Production.json
 Docker-Logs/
+logs/

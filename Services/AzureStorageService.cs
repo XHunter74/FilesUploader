@@ -113,7 +113,7 @@ public class AzureStorageService
     {
         try
         {
-            _logger.LogInformation("Listing blobs in container {ContainerName}", containerName);
+            _logger.LogInformation("Listing blobs in container '{ContainerName}'", containerName);
 
             var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobNames = new List<AppFileInfo>();
@@ -128,12 +128,12 @@ public class AzureStorageService
                 });
             }
 
-            _logger.LogInformation("Found {Count} blobs in container {ContainerName}", blobNames.Count, containerName);
+            _logger.LogInformation("Found {Count} blobs in container '{ContainerName}'", blobNames.Count, containerName);
             return blobNames;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while listing blobs in container {ContainerName}", containerName);
+            _logger.LogError(ex, "Error occurred while listing blobs in container '{ContainerName}'", containerName);
             throw;
         }
     }
@@ -150,22 +150,22 @@ public class AzureStorageService
     {
         try
         {
-            _logger.LogInformation("Starting deletion of {Count} files from container {ContainerName}", filesForDelete.Count(), container);
+            _logger.LogInformation("Starting deletion of {Count} files from container '{ContainerName}'", filesForDelete.Count(), container);
 
             var containerClient = _blobServiceClient.GetBlobContainerClient(container);
 
             foreach (var fileName in filesForDelete)
             {
-                _logger.LogDebug("Deleting blob: {BlobName} from container: {ContainerName}", fileName, container);
+                _logger.LogDebug("Deleting blob: {BlobName} from container: '{ContainerName}'", fileName, container);
                 var blobClient = containerClient.GetBlobClient(fileName);
                 await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
             }
 
-            _logger.LogInformation("Finished deletion of files from container {ContainerName}", container);
+            _logger.LogInformation("Finished deletion of files from container '{ContainerName}'", container);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while deleting files from container {ContainerName}", container);
+            _logger.LogError(ex, "Error occurred while deleting files from container '{ContainerName}'", container);
             throw;
         }
     }
