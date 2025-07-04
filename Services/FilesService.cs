@@ -28,7 +28,7 @@ public class FilesService
         _logger = logger;
         _appSettings = options.Value;
         _azureStorageService = azureStorageService;
-        _logger.LogInformation("FilesService initialized with scan folder: {ScanFolder}", _appSettings.ScanFolder);
+        _logger.LogInformation("FilesService initialized with scan folder: '{ScanFolder}'", _appSettings.ScanFolder);
     }
 
     /// <summary>
@@ -37,11 +37,11 @@ public class FilesService
     /// <param name="cancellationToken">A cancellation token.</param>
     public async Task ScanFolderAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting folder scan in: {ScanFolder}", _appSettings.ScanFolder);
+        _logger.LogInformation("Starting folder scan in: '{ScanFolder}'", _appSettings.ScanFolder);
         if (!Directory.Exists(_appSettings.ScanFolder))
         {
             Directory.CreateDirectory(_appSettings.ScanFolder);
-            _logger.LogWarning("Scan folder did not exist. Created: {ScanFolder}", _appSettings.ScanFolder);
+            _logger.LogWarning("Scan folder did not exist. Created: '{ScanFolder}'", _appSettings.ScanFolder);
         }
 
         var fullPath = Path.GetFullPath(_appSettings.ScanFolder);
@@ -54,28 +54,28 @@ public class FilesService
             var filePath = Path.Combine(fullPath, file);
             try
             {
-                _logger.LogInformation("Uploading file: {FileName}", file);
+                _logger.LogInformation("Uploading file: '{FileName}'", file);
                 await _azureStorageService.UploadFileAsync(
                     _appSettings.Container,
                     file,
                     filePath,
                     cancellationToken);
-                _logger.LogInformation("Successfully uploaded file: {FileName}", file);
+                _logger.LogInformation("Successfully uploaded file: '{FileName}'", file);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while uploading file {FileName} to Azure Storage", file);
+                _logger.LogError(ex, "Error occurred while uploading file '{FileName}' to Azure Storage", file);
             }
             finally
             {
                 try
                 {
                     File.Delete(filePath);
-                    _logger.LogInformation("Deleted local file: {FileName}", file);
+                    _logger.LogInformation("Deleted local file: '{FileName}'", file);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to delete local file: {FileName}", file);
+                    _logger.LogError(ex, "Failed to delete local file: '{FileName}'", file);
                 }
             }
         }
@@ -123,7 +123,7 @@ public class FilesService
     /// </remarks>
     public async Task CleanOutdatedFilesAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting cleanup of outdated files in container: {Container}", _appSettings.Container);
+        _logger.LogInformation("Starting cleanup of outdated files in container: '{Container}'", _appSettings.Container);
         if (!_appSettings.MaxFilesToStore.HasValue)
             return;
 

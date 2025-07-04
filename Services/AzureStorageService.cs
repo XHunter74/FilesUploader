@@ -78,26 +78,26 @@ public class AzureStorageService
     {
         try
         {
-            _logger.LogInformation("Starting upload for file {BlobName} from path {FilePath} to container {ContainerName}", blobName, filePath, containerName);
+            _logger.LogInformation("Starting upload for file '{BlobName}' from path '{FilePath}' to container '{ContainerName}'", blobName, filePath, containerName);
 
-            _logger.LogDebug("Getting BlobContainerClient for container: {ContainerName}", containerName);
+            _logger.LogDebug("Getting BlobContainerClient for container: '{ContainerName}'", containerName);
             var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
 
-            _logger.LogDebug("Ensuring container exists: {ContainerName}", containerName);
+            _logger.LogDebug("Ensuring container exists: '{ContainerName}'", containerName);
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
-            _logger.LogDebug("Getting BlobClient for blob: {BlobName}", blobName);
+            _logger.LogDebug("Getting BlobClient for blob: '{BlobName}'", blobName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
-            _logger.LogDebug("Uploading blob: {BlobName} from file: {FilePath}", blobName, filePath);
+            _logger.LogDebug("Uploading blob: '{BlobName}' from file: '{FilePath}'", blobName, filePath);
             using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             await blobClient.UploadAsync(fileStream, overwrite: true, cancellationToken: cancellationToken);
 
-            _logger.LogInformation("Finished upload for file {BlobName} from path {FilePath} to container {ContainerName}", blobName, filePath, containerName);
+            _logger.LogInformation("Finished upload for file '{BlobName}' from path '{FilePath}' to container '{ContainerName}'", blobName, filePath, containerName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while uploading file {BlobName} from path {FilePath} to container {ContainerName}", blobName, filePath, containerName);
+            _logger.LogError(ex, "Error occurred while uploading file '{BlobName}' from path '{FilePath}' to container '{ContainerName}'", blobName, filePath, containerName);
             throw;
         }
     }
