@@ -109,4 +109,63 @@ public class FilesService
             throw new IOException($"Error accessing files in {path} ", ex);
         }
     }
+
+    /// <summary>
+    /// Cleans up outdated files in the configured Azure Storage container by deleting files
+    /// that exceed the maximum number of files to store per folder, as specified in <see cref="AppSettings.MaxFilesToStore"/>.
+    /// For each folder in the container, only the most recent files up to the limit are kept; older files are deleted.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <remarks>
+    /// This method retrieves all files in the container, groups them by folder, and deletes the oldest files
+    /// if the number of files in a folder exceeds the configured maximum. If <see cref="AppSettings.MaxFilesToStore"/>
+    /// is not set, the method returns without performing any action.
+    /// </remarks>
+    public async Task CleanOutdatedFilesAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Starting cleanup of outdated files in container: {Container}", _appSettings.Container);
+        if (!_appSettings.MaxFilesToStore.HasValue)
+            return;
+
+        var maxFilesToStore = _appSettings.MaxFilesToStore.Value;
+
+        _logger.LogInformation("Max files to store: {MaxFilesToStore}", maxFilesToStore);
+
+        var files = await _azureStorageService.GetFilesInContainerAsync(_appSettings.Container, cancellationToken);
+
+        var folders = files
+            .Select(f => f.Folder ?? string.Empty)
+            .Distinct()
+            .ToList();
+
+        var filesForDelete = new List<string>();
+
+        foreach (var folder in folders)
+        {
+            var filesCount = files.Where(e => e.Folder == folder).Count();
+            if (filesCount > maxFilesToStore)
+            {
+                var forDelete = files
+                    .Where(e => e.Folder == folder)
+                    .OrderByDescending(e => e.Created)
+                    .Skip(maxFilesToStore)
+                    .Select(e => Path.Combine(e.Folder, e.Name))
+                    .ToList();
+                filesForDelete.AddRange(forDelete);
+            }
+        }
+
+        if (filesForDelete.Count == 0)
+        {
+            _logger.LogInformation("No outdated files to delete.");
+            return;
+        }
+
+        _logger.LogInformation("Found {Count} outdated files to delete.", filesForDelete.Count);
+
+        await _azureStorageService
+            .DeleteFilesAsync(_appSettings.Container, filesForDelete, cancellationToken);
+
+        _logger.LogInformation("Cleanup of outdated files completed.");
+    }
 }

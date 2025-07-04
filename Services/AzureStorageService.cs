@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
+using xhunter74.FilesUploader.Models;
 
 namespace xhunter74.FilesUploader.Services;
 
@@ -97,6 +98,74 @@ public class AzureStorageService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while uploading file {BlobName} from path {FilePath} to container {ContainerName}", blobName, filePath, containerName);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves a list of files (blobs) in the specified Azure Blob Storage container.
+    /// </summary>
+    /// <param name="containerName">The name of the blob container.</param>
+    /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a collection of <see cref="AppFileInfo"/> objects representing the blobs.</returns>
+    /// <exception cref="Exception">Throws if the listing fails.</exception>
+    public async Task<IEnumerable<AppFileInfo>> GetFilesInContainerAsync(string containerName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogInformation("Listing blobs in container {ContainerName}", containerName);
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            var blobNames = new List<AppFileInfo>();
+
+            await foreach (var blobItem in containerClient.GetBlobsAsync(cancellationToken: cancellationToken))
+            {
+                blobNames.Add(new AppFileInfo
+                {
+                    Name = Path.GetFileName(blobItem.Name),
+                    Folder = Path.GetDirectoryName(blobItem.Name) ?? string.Empty,
+                    Created = blobItem.Properties.CreatedOn ?? DateTimeOffset.MinValue // Use a default value if null.
+                });
+            }
+
+            _logger.LogInformation("Found {Count} blobs in container {ContainerName}", blobNames.Count, containerName);
+            return blobNames;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while listing blobs in container {ContainerName}", containerName);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Deletes the specified files (blobs) from the given Azure Blob Storage container.
+    /// </summary>
+    /// <param name="container">The name of the blob container.</param>
+    /// <param name="filesForDelete">A collection of blob names to delete.</param>
+    /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+    /// <returns>A task representing the asynchronous delete operation.</returns>
+    /// <exception cref="Exception">Throws if the deletion fails.</exception>
+    public async Task DeleteFilesAsync(string container, IEnumerable<string> filesForDelete, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogInformation("Starting deletion of {Count} files from container {ContainerName}", filesForDelete.Count(), container);
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
+
+            foreach (var fileName in filesForDelete)
+            {
+                _logger.LogDebug("Deleting blob: {BlobName} from container: {ContainerName}", fileName, container);
+                var blobClient = containerClient.GetBlobClient(fileName);
+                await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+            }
+
+            _logger.LogInformation("Finished deletion of files from container {ContainerName}", container);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while deleting files from container {ContainerName}", container);
             throw;
         }
     }

@@ -18,4 +18,6 @@ public class AppSettings
 
     [Required(AllowEmptyStrings = false)]
     public string AzureConnectionString { get; set; }
+    
+    public int? MaxFilesToStore { get; set; }
 }

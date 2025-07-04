@@ -52,6 +52,7 @@ public class AppBackgroundService : BaseBackgroundService
                 using var scope = _scopeFactory.CreateScope();
                 var filesService = scope.ServiceProvider.GetService<FilesService>();
                 await filesService.ScanFolderAsync(cancellationToken);
+                await filesService.CleanOutdatedFilesAsync(cancellationToken);
             }
             catch (Exception e)
             {
