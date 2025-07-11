@@ -156,7 +156,7 @@ public class AzureStorageService
 
             foreach (var fileName in filesForDelete)
             {
-                _logger.LogDebug("Deleting blob: {BlobName} from container: '{ContainerName}'", fileName, container);
+                _logger.LogInformation("Deleting blob: {BlobName} from container: '{ContainerName}'", fileName, container);
                 var blobClient = containerClient.GetBlobClient(fileName);
                 await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
             }
